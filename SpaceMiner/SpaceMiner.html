@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta content="SpaceMiner" property="title">
+    <title>SpaceMiner</title>
+    <link rel="icon" href="./Sprite/SpaceCrystal.png">
+    <link rel="stylesheet" type="text/css" href="./CSS/SpaceMiner.css">
+</head>
+
+<body style="background-position: 234px 116px;">
+    <!--Main Content-->
+    <div class="window box" id="tab_main" style="width: 350px; height: 300px; left: 930px; top: 470px;">
+        <div class="title-bar">
+            <div class="title-bar-text">SpaceMiner</div>
+        </div>
+        <div class="window-body">
+            <p class="titleText">You have <a id="sc">0</a> Space-Crystals</p> <!--sc = Space Crystals-->
+            <p style="margin-top: 4px">(<a id="scPerSecond">0</a>/s, <a id="scPerClick">1</a>/click)</p>
+        </div>
+        <button style="min-width: 74px" onclick="produceSC()">Mine Space-Crystals</button></div><br>
+        <button id="buyMinerButton" style="height: 34px; text-align: left" onclick="buyMiner()" disabled="">Hire a Miner<br>Costs: <a id="minerCost">20</a> gold</button>
+    </div>
+
+    <!--Scripts-->
+    <script src="./Script/break_infinity.min.js"></script>
+    <script src="./Script/sc.js"></script>
+    <script src="./Script/script.js"></script>
+    
+</html>
