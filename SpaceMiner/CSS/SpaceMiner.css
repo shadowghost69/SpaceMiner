@@ -1,5 +1,112 @@
-body{
-    color: #222;
-    font-family: Arial;
-    font-size: 15px;
+@font-face{
+    font-family:"Pixelated MS Sans Serif";
+    font-style:normal;
+    font-weight:400;
+    src:url(fonts/ms_sans_serif.woff) format("woff");
+    src:url(fonts/ms_sans_serif.woff2) format("woff2")
+}
+@font-face{
+    font-family:"Pixelated MS Sans Serif";
+    font-style:normal;
+    font-weight:700;
+    src:url(fonts/ms_sans_serif_bold.woff) format("woff");
+    src:url(fonts/ms_sans_serif_bold.woff2) format("woff2")
+}
+@font-face{
+    font-family:"Alagard";
+    font-style:normal;
+    font-weight:700;
+    src:url(fonts/alagard.woff) format("woff");
+}
+@font-face{
+    font-family:"VCR OSD MONO";
+    font-style:normal;
+    font-weight:700;
+    src:url(fonts/VCR_OSD_MONO.woff) format("woff");
+}
+
+*:disabled {
+  pointer-events: none;
+}
+
+html, body {
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #222;
+  background-image: url('');
+  overflow: hidden;
+  user-select: none;
+  cursor: all-scroll;
+  font-smooth: never;
+  -webkit-font-smoothing: none;
+  transition: filter 1.5s;
+  touch-action: manipulation;
+}
+
+.box {
+  position: absolute;
+  top: 100px;
+  left: 100px;
+  transform: translate(-50%, -50%);
+}
+
+p {
+  margin-left: 4px;
+  font-family: "Pixelated MS Sans Serif", Arial;
+}
+
+.titleText {
+  font-family: 'Alagard';
+  font-size: 24px;
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
+.status-bar {
+  gap: 1px;
+  display: flex;
+  margin: 0 1px;
+  position: absolute;
+  bottom: 4px;
+  width: 298px;
+}
+
+.status-bar-field {
+  box-shadow: inset -1px -1px #dfdfdf,inset 1px 1px grey;
+  flex-grow: 1;
+  margin: 0;
+  padding: 2px 3px;
+  color: #444;
+}
+
+button {
+  margin-left: 4px;
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+
+img {
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+.clickButton {
+  color: white;
+  position: absolute;
+  width: 64px;
+  cursor: pointer;
+  pointer-events: auto;
+  image-rendering: pixelated;
+  bottom: 5px;
+}
+
+.resourceRow {
+  margin-top: 4px;
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
+.resourceIcon {
+  padding-right: 5px;
 }
