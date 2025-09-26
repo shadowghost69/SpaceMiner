@@ -5,14 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta content="SpaceMiner" property="title">
     <title>SpaceMiner</title>
-    <link rel="icon" href="./Sprite/SpaceCrystal.png">
+    <link rel="icon" href="./img/SpaceCrystal.png">
     <link rel="stylesheet" href="./CSS/98.css">
     <link rel="stylesheet" type="text/css" href="./CSS/SpaceMiner.css">
 </head>
 
-<body style="background-position: 234px 116px;">
+<body onclick="updateSmall()">
+    <!-- Navigation Buttons -->
+    <button id="tabButton" style="position: absolute; top: 5px; left: 5px; min-width: 80px; min-height: 25px; margin: 0; z-index: 1;" onclick="changeTab(2)">Resources</button>
+    <button id="tabButton" style="position: absolute; top: 5px; left: 90px; min-width: 80px; min-height: 25px; margin: 0; z-index: 1;" onclick="changeTab(1)">Settings</button>
+
     <!--Main Content-->
-    <div class="window box" id="tab_main" style="width: 350px; height: 300px; left: 930px; top: 470px;">
+    <div class="window box tab" id="mainTab" style="width: 350px; height: 300px; left: 930px; top: 470px;">
         <div class="title-bar">
             <div class="title-bar-text">Space-Miner</div>
         </div>
@@ -20,29 +24,103 @@
             <p class="titleText">You have <a id="sc">0</a> Space-Crystals</p> <!--sc = Space Crystals-->
             <p style="margin-top: 4px">(<a id="scPerSecond">0</a>/s, <a id="scPerClick">1</a>/click)</p>
             <button style="min-width: 74px" onclick="produceSC()">Mine Space-Crystals</button><br>
-            <button id="buyMinerButton" style="height: 34px; text-align: left" onclick="buyMiner()" disabled="">Buy a Miner<br>Costs: <a id="minerCost">20</a> gold</button>
+            <button id="buyMinerButton" style="height: 34px; text-align: left" onclick="buyMiner()" disabled="">Buy a Miner<br>Costs: <a id="minerCost">20</a> Crystals</button>
             <button id="buyMaxMinerButton" style="height: 34px; min-width: 49px" onclick="buyMaxMiner()">Buy<br>max</button><br>
             <button id="minerAutoBuyMaxButton" style="display: none;" onclick="minerAutoBuyMax()">Auto buy max: On</button><br><br>
 
+            <button id="unlockGeneratorButton" style="height: 34px" onclick="unlockGenerator()">Repair Generator<br>Costs 250 Crystals</button><br><br>
+            <button id="repairShip" style="height: 34px" onclick="repairShip()">Repair Spaceship<br>Costs 2,000 Crystals</button>
+
         </div>
     </div>
 
-    <!--Settings-->
-    <div class="window box" style="width: 150px; height: 50px; left: 5px; transform: none; padding-bottom: 8px; z-index: 1; display: none;">
-        <div class="title-bar" style="background-image: linear-gradient(90deg, rgb(71, 71, 71), rgb(141, 136, 136));">
-            <div class="title-bar-text">Settings</div>
-            <div class="title-bar-controls">
-                <!--<button aria-label="Close"></button>-->
-        </div>
-        <div class="window-body">
-            <button style="width: 142px; margin-top: 4px" onclick="save()">  Manual save</button><br>
-        </div>
-    </div>
+  <!--Settings-->
+  <div id="settingsTab" class="window box tab"
+    style="width: 150px; top: 55px; left: 5px; transform: none; padding-bottom: 8px; z-index: 1; display: none;">
+    <div class="title-bar" style="background-image: linear-gradient(90deg,grey,#b5b5b5);">
 
-    <!--Scripts-->
-    <script src="./Script/break_infinity.min.js"></script>
-    <script src="./Script/sc.js"></script>
-    <script src="./Script/script.js"></script>
-    <script>load()</script>
+      <div class="title-bar-text" onclick="changeTab(2)">Settings</div>
+      <div class="title-bar-controls">
+        <button aria-label="Close" style="background-image: url('img/close.svg'); background-repeat: no-repeat; background-position: 3px 3px" onclick="changeTab(0)"></button>
+      </div>
+    </div>
+    <div class="window-body">
+      <button style="width: 142px; margin-top: 4px" onclick="save()">&#8202;&#8202;Manual save</button><br>
+      <hr>
+      <button style="width: 142px; background-color: #daa" onclick="hardReset()">&#8202;&#8202;Hard reset</button>
+    </div>
+  </div>
+
+  <!--Resources tab-->
+  <div id="resourcesTab" class="window box tab" style="width: 200px; top: 55px; left: 5px; transform: none; padding-bottom: 8px; z-index: 1">
+    <div class="title-bar">
+      <div class="title-bar-text">Resources</div>
+      <div class="title-bar-controls">
+        <button aria-label="Close" style="background-image: url('img/close.svg'); background-repeat: no-repeat; background-position: 3px 3px" onclick="changeTab(0)"></button>
+      </div>
+    </div>
+    <div class="window-body" style="max-height: calc(95vh - 75px); overflow: auto">
+      <p class="resourceRow" onclick="posSet(0,0)"><img src="img/SpaceCrystal.png" width="16px" height="16px" class="resourceIcon"></img>Space Crystals: <a class="resourceText">0</a></p>
+      <!--<p class="resourceRow" onclick="posSet(0,0)" style="display: none"><img src="img/iconMiner.png" class="resourceIcon"></img>Miners: <a class="resourceText">0</a></p>-->
+    </div>
+  </div>
+
+  <!--Generator tab-->
+  <div class="window box" id="generator" style="width: 350px; z-index: 100;">
+    <div class="title-bar">
+      <div class="title-bar-text">Generator</div>
+    </div>
+    <div class="window-body">
+      <center>
+        <p id="generatorStageCounter" style="position: absolute; margin: 2px; font-size: 22px; color: #777" ></p>
+        <p id="generatorTitle" class="titleText" style="margin-top: 0;"><a style="font-size: 14px">You have a</a><br>Normal
+          generator</p>
+        <img id="generatorImg" draggable="false" src="img/iconDragon1.png" style="width: 128px; margin: 4px; pointer-events: auto"><br>
+      </center>
+      <p id="generatorInfo" style="margin-right: 4px">Your normal generator generates Energy for you.</p>
+      <p style="color: rgb(35, 17, 194)">Energy is multiplying Crystal production by <a id="EnergySCMultiplier">1.00</a></p>
+      <button id="buyEnergyUpgradesButton" style="height: 34px" onclick="buyEnergyUpgrades()">Unlock energy upgrades<br>Costs
+        5,000 Crystals</button>
+        
+      <!--<button class="upgradeGeneratorButton" style="height: 46px; display: none;" onclick="upgradeGenerator(1)">Upgrade your
+        generator into an adult<br>Multiplies energy gain by 100<br>Costs 2,500,000 Crystals</button>
+
+      <button class="upgradeGeneratorButton" style="height: 46px; display: none;" onclick="upgradeGenerator(2)">Upgrade your
+        generator into an elder<br>Multiplies energy gain by 100<br>Costs 1.00e12 Crystals</button>
+
+      <button class="upgradeGeneratorButton" style="height: 46px; display: none;" onclick="upgradeGenerator(3)">Infuse your
+        generator with the power of darkness<br>Multiplies energy gain by 10,000<br>Costs 1.00e25 Crystals</button>
+
+      <button class="upgradeDragonButton" style="height: 46px; display: none;" onclick="upgradeDragon(4)">Infuse your
+        dragon with the power of light<br>Multiplies energy gain by 10,000,000<br>Costs 1.00e150 Crystals</button>-->
+  </div>
+
+  <div></div>
+
+  <div id="navArrows">
+    <img src="img/arrowUp.png" id="arrowUp" class="clickButton arrow-up">
+    <img src="img/arrowDown.png" id="arrowDown" class="clickButton arrow-down">
+    <img src="img/arrowLeft.png" id="arrowLeft" class="clickButton arrow-left">
+    <img src="img/arrowRight.png" id="arrowRight" class="clickButton arrow-right">
+  </div>
+
+  <!--<button class="tabButton" id ="achievementTabButton" style="position: absolute; top: 5px; left: 164px; min-height: 20px; margin: 0; z-index: 1"
+  onclick="changeTab(3)">Achievements</button>-->
+  <!--<button class="tabButton" style="position: absolute; top: 30px; left: 5px; min-height: 20px; margin: 0; z-index: 1"
+  onclick="changeTab(4)">Info/credits</button>-->
+
+
+  <!--Scripts-->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="./Script/break_infinity.min.js"></script>
+  <script src="./Script/script.js"></script>
+  <script src="./Script/const.js"></script>
+  <script src="./Script/sc.js"></script>
+  <script src="./Script/generator.js"></script>
+  <script src="./Script/energy.js"></script>
+  <script src="./Script/render.js"></script>
+  <script>load()</script>
+
+</body>
     
 </html>

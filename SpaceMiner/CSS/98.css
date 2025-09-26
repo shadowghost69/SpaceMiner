@@ -130,7 +130,7 @@ button::-moz-focus-inner,input[type=reset]::-moz-focus-inner,input[type=submit]:
 }
 .status-bar{
     gap:1px;
-    display:flex;
+    display:flex; 
     margin:0 1px;
     background-color: red;
 }

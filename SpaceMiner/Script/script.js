@@ -1,10 +1,51 @@
 const game = {
+
+    unlocks: 0,
+    lastUpdate: Date.now(),
+    lastSave: 0,
+    timePlayed: 0,
+    currentTab: 0,
+
     sc: new Decimal(0), // Space-Crystals
     scPerSecond: new Decimal(0), // Space-Crystals per second
     scPerClick: new Decimal(1), // Space-Crystals per click
     miner: new Decimal(0), // Number of miners
     minerCost: new Decimal(20), // Cost of hiring a miner
+    generatorUnlocked: false, // Track if the generator is unlocked
+
+    energy: new Decimal(0),
+    energyPerSecond: new Decimal(1),
+    //I still need to condense these into an array *cries*
+    energyGoldMultiplier: new Decimal(1),
+    energyAutoMaxAll: true,
+    energyUpgrade1Bought: new Decimal(0),
+    energyUpgrade1Cost: new Decimal(50),
+    energyUpgrade2Bought: new Decimal(0),
+    energyUpgrade2Cost: new Decimal(100),
+    energyUpgrade3Bought: new Decimal(0),
+    energyUpgrade3Cost: new Decimal(100),
+    energyUpgrade4Bought: new Decimal(0),
+    energyUpgrade4Cost: new Decimal(500),
+    energyUpgrade5Bought: new Decimal(0),
+    energyUpgrade5Cost: new Decimal(500),
+    energyUpgrade6Bought: new Decimal(0),
+    energyUpgrade6Cost: new Decimal(2e7),
+    dragonStage: 1,
 };
+
+const BMamountCanBuy = Decimal.affordGeometricSeries(
+    game.sc,
+    new Decimal(20), // Starting cost of a miner
+    new Decimal(1.1),
+    game.miner
+);
+
+const BMCost = Decimal.sumGeometricSeries(
+    BMamountCanBuy,
+    new Decimal(20), // Starting cost of a miner
+    new Decimal(1.1),
+    game.miner
+);
 
 function updateSmall() {
     const scElement = document.getElementById("sc");
@@ -27,7 +68,16 @@ function updateSmall() {
         minerElement.textContent = game.minerCost.toFixed(0); // Update miner cost
     }
 
+    
+
     updateMinerButton();
+}
+
+function updateMinerButton() {
+    const buyMinerButton = document.getElementById("buyMinerButton");
+    if (buyMinerButton) {
+        buyMinerButton.disabled = !game.sc.gte(game.minerCost); // Enable if SC >= miner cost
+    }
 }
 
 function updatePerSecond() { // Function to update Space-Crystals per second
@@ -72,6 +122,27 @@ function setAutoSave() { // Function to enable autosave
 
 setAutoSave(); // Call setAutoSave during game initialization
 
+function changeTab(tabIndex) {
+    const settingsTab = document.getElementById('settingsTab');
+    const resourcesTab = document.getElementById('resourcesTab');
+
+    if (tabIndex === 1) {
+        // Show the Settings Tab and hide the Resources Tab
+        if (settingsTab) settingsTab.style.display = 'block';
+        if (resourcesTab) resourcesTab.style.display = 'none';
+    } else if (tabIndex === 2) {
+        // Show the Resources Tab and hide the Settings Tab
+        if (resourcesTab) resourcesTab.style.display = 'block';
+        if (settingsTab) settingsTab.style.display = 'none';
+    } else if (tabIndex === 0) {
+        // Close both tabs
+        if (settingsTab) settingsTab.style.display = 'none';
+        if (resourcesTab) resourcesTab.style.display = 'none';
+    }
+}
+
+window.changeTab = changeTab;
+
 function load() {
   const savedGame = localStorage.getItem("SpaceSave");
   if (savedGame) {
@@ -102,5 +173,26 @@ function reset() {
     game.miner = new Decimal(0);
     game.minerCost = new Decimal(20);
 
+    localStorage.removeItem("SpaceSave");
+    console.log("Saved data cleared.");
+
     updateSmall(); // Refresh the display after resetting
+}
+
+function hardReset() { //If the user confirms the hard reset, resets all variables, saves and refreshes the page
+  if (confirm("Are you sure you want to reset?")) {
+    reset()
+    save()
+    location.reload()
+  }
+}
+
+function addUnlock(id, condition) {
+    console.log(`addUnlock called with ID: ${id}, Condition: ${condition}`);
+    const element = document.getElementById(id);
+    if (element) {
+        element.style.display = condition ? 'block' : 'none';
+    } else {
+        console.error(`Element with ID '${id}' not found.`);
+    }
 }

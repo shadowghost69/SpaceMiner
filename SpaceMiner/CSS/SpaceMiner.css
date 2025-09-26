@@ -34,14 +34,12 @@ html, body {
   height: 100%;
   width: 100%;
   background-color: #222;
-  background-image: url('');
+  background-image: url('../img/back.gif'); /* Ensure the path to the background image is correct */
+  background-repeat: repeat; /* Repeat the background for infinite scrolling */
+  background-position: 0px 0px; /* Initial position */
   overflow: hidden;
   user-select: none;
-  cursor: all-scroll;
-  font-smooth: never;
-  -webkit-font-smoothing: none;
-  transition: filter 1.5s;
-  touch-action: manipulation;
+  cursor: all-scroll; /* Default cursor for dragging */
 }
 
 .box {
@@ -49,6 +47,55 @@ html, body {
   top: 100px;
   left: 100px;
   transform: translate(-50%, -50%);
+}
+
+/* General tab styling */
+.tab {
+  position: absolute; /* Keeps tabs in a fixed position relative to the viewport */
+  z-index: 1000; /* Ensures tabs are above the background */
+}
+
+.tabButton {
+  font-size: 13px;
+  visibility: visible; /* Ensure buttons are not hidden */
+  z-index: 100; /* Higher than the generator */
+}
+
+#mainTab {
+    position: absolute;
+    top: 300px;
+    left: 100px;
+    width: 400px;
+    height: 300px;
+    z-index: 20;
+}
+
+#settingsTab {
+    position: absolute;
+    top: 50px; /* Positioned below the buttons */
+    left: 100px;
+    width: 400px;
+    display: none; /* Hidden by default */
+    z-index: 10;
+}
+
+#resourcesTab {
+    position: absolute;
+    top: 50px; /* Positioned below the buttons */
+    left: 100px;
+    width: 400px;
+    display: none; /* Hidden by default */
+    z-index: 10;
+}
+
+#generator {
+    position: absolute;
+    width: 350px;
+    display: none;
+    top: 790px; 
+    left: 930px; 
+    z-index: 0; 
+    border: 2px solid red; /* Debugging border for the generator */
 }
 
 p {
@@ -101,6 +148,23 @@ img {
   bottom: 5px;
 }
 
+#arrowRight {
+  right: 80px;
+}
+#arrowLeft {
+  right: 152px;
+}
+#arrowDown {
+  right: 224px;
+}
+#arrowUp {
+  right: 296px;
+}
+#navArrows {
+  display:none;
+  opacity: 0.7;
+}
+
 .resourceRow {
   margin-top: 4px;
   margin-bottom: 0;
@@ -109,4 +173,17 @@ img {
 
 .resourceIcon {
   padding-right: 5px;
+}
+
+.fireUpgrade {
+  text-align: left;
+}
+
+.confirmationToggle {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #0f5691;
+  cursor: pointer;
+  image-rendering: pixelated;
+  display: inline-block;
 }
