@@ -92,15 +92,24 @@ html, body {
     position: absolute;
     width: 350px;
     display: none;
-    top: 790px; 
-    left: 930px; 
-    z-index: 0; 
-    border: 2px solid red; /* Debugging border for the generator */
+    top: 875px;
+    left: 930px;
+    z-index: 0;
+}
+
+#energyTab {
+    position: absolute;
+    width: 350px;
+    display: none;
+    top: 225px; 
+    left: 550px; 
+    z-index: 10;
 }
 
 p {
   margin-left: 4px;
   font-family: "Pixelated MS Sans Serif", Arial;
+  font-size: 13px;
 }
 
 .titleText {
@@ -130,6 +139,7 @@ p {
 button {
   margin-left: 4px;
   margin-bottom: 4px;
+  font-size: 13px;
   cursor: pointer;
 }
 

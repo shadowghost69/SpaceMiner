@@ -1,11 +1,8 @@
 function unlockGenerator() {
-    const generator = document.getElementById('generator');
+    const generatorTab = document.getElementById('generator');
     const unlockButton = document.getElementById('unlockGeneratorButton');
 
-    console.log("generator:", generator);
-    console.log("unlockButton:", unlockButton);
-
-    if (!generator || !unlockButton) {
+    if (!generatorTab || !unlockButton) {
         console.error("Generator elements not found.");
         return;
     }
@@ -17,10 +14,14 @@ function unlockGenerator() {
     }
 
     // Deduct 250 SC and unlock the generator
-    game.sc = game.sc.sub(250).max(0);
-    generator.style.display = 'block'; // Show the Generator Tab
-    unlockButton.style.display = 'none'; // Hide the unlock button
-    console.log("Generator repaired! Remaining SC:", game.sc);
+    game.sc = game.sc.sub(250).max(0); // Deduct 250 SC
+    generatorTab.style.display = 'block'; // Show the Generator Tab
+    unlockButton.style.display = 'none'; // Hide the "Repair Generator" button
+    console.log("Generator unlocked!");
+    addUnlock(); // Sets unlock to 1
+
+    // Save the unlocked state in localStorage
+    localStorage.setItem('generatorUnlocked', 'true');
 
     // Update the UI
     updateSmall();

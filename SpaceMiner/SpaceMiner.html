@@ -75,17 +75,17 @@
         <p id="generatorStageCounter" style="position: absolute; margin: 2px; font-size: 22px; color: #777" ></p>
         <p id="generatorTitle" class="titleText" style="margin-top: 0;"><a style="font-size: 14px">You have a</a><br>Normal
           generator</p>
-        <img id="generatorImg" draggable="false" src="img/iconDragon1.png" style="width: 128px; margin: 4px; pointer-events: auto"><br>
+        <img id="generatorImg" draggable="false" src="img/Generator1.png" style="width: 300px; margin: 4px; pointer-events: auto"><br>
       </center>
       <p id="generatorInfo" style="margin-right: 4px">Your normal generator generates Energy for you.</p>
       <p style="color: rgb(35, 17, 194)">Energy is multiplying Crystal production by <a id="EnergySCMultiplier">1.00</a></p>
       <button id="buyEnergyUpgradesButton" style="height: 34px" onclick="buyEnergyUpgrades()">Unlock energy upgrades<br>Costs
         5,000 Crystals</button>
-        
-      <!--<button class="upgradeGeneratorButton" style="height: 46px; display: none;" onclick="upgradeGenerator(1)">Upgrade your
-        generator into an adult<br>Multiplies energy gain by 100<br>Costs 2,500,000 Crystals</button>
+      
+      <button class="upgradeGeneratorButton" style="height: 46px; display: none;" onclick="upgradeGenerator(1)">Upgrade your
+        generator<br>Multiplies energy gain by 100<br>Costs 2,500,000 Crystals</button>
 
-      <button class="upgradeGeneratorButton" style="height: 46px; display: none;" onclick="upgradeGenerator(2)">Upgrade your
+      <!--<button class="upgradeGeneratorButton" style="height: 46px; display: none;" onclick="upgradeGenerator(2)">Upgrade your
         generator into an elder<br>Multiplies energy gain by 100<br>Costs 1.00e12 Crystals</button>
 
       <button class="upgradeGeneratorButton" style="height: 46px; display: none;" onclick="upgradeGenerator(3)">Infuse your
@@ -95,20 +95,45 @@
         dragon with the power of light<br>Multiplies energy gain by 10,000,000<br>Costs 1.00e150 Crystals</button>-->
   </div>
 
-  <div></div>
-
-  <div id="navArrows">
-    <img src="img/arrowUp.png" id="arrowUp" class="clickButton arrow-up">
-    <img src="img/arrowDown.png" id="arrowDown" class="clickButton arrow-down">
-    <img src="img/arrowLeft.png" id="arrowLeft" class="clickButton arrow-left">
-    <img src="img/arrowRight.png" id="arrowRight" class="clickButton arrow-right">
+    <!--Energy upgrades tab-->
+  <div class="window box" id="energyTab" style="width: 350px; height: 400px; background-color: rgb(10, 165, 226); display: none">
+    <div class="title-bar">
+      <div class="title-bar-text">Energy upgrades</div>
+    </div>
+    <div class="window-body">
+      <p class="titleText">You have <a id="energy">0</a> energy</p>
+      <p style="margin-top: 4px">(<a id="energyPerSecond">0</a>/s)</p>
+      <hr>
+      <button class="energyUpgrade" style="height: 46px" onclick="buyEnergyUpgrade(1)">Increase Energy production<br>Currently
+        x<a id="energyUpgrade1Effect">1.00</a><br>Costs <a id="energyUpgrade1Cost">50</a> Energy</button>
+      <!--<button class="energyBuyMaxButton" onclick="energyBuyMax(1)">Buy max</button>--><br>
+      <button class="energyUpgrade" style="height: 46px" onclick="buyEnergyUpgrade(2)">Increase Energy effect<br>Currently x<a
+          id="energyUpgrade2Effect">1.00</a><br>Costs <a id="energyUpgrade2Cost">100</a> Energy</button>
+      <!--<button class="energyBuyMaxButton" onclick="energyBuyMax(2)">Buy max</button>--><br>
+      <button class="energyUpgrade" style="height: 46px" onclick="buyEnergyUpgrade(3)">Increase Crystals/click<br>Currently x<a
+          id="energyUpgrade3Effect">1.00</a><br>Costs <a id="energyUpgrade3Cost">100</a> Energy</button>
+      <!--<button class="energyBuyMaxButton" onclick="energyBuyMax(3)">Buy max</button>--><br>
+      <button class="energyUpgrade" style="height: 46px" onclick="buyEnergyUpgrade(4)">Miners increase
+        Crystals/second<br>Currently x<a id="energyUpgrade4Effect">1.00</a><br>Costs <a id="energyUpgrade4Cost">500</a>
+        Energy</button>
+      <!--<button class="energyBuyMaxButton" onclick="energyBuyMax(4)">Buy max</button>--><br>
+      <button class="energyUpgrade" style="height: 46px" onclick="buyEnergyUpgrade(5)">Crystals increase
+        energy/second<br>Currently x<a id="energyUpgrade5Effect">1.00</a><br>Costs <a id="energyUpgrade5Cost">500</a>
+        Energy</button>
+      <!--<button class="energyBuyMaxButton" onclick="energyBuyMax(5)">Buy max</button>--><br>
+      <button class="energyUpgrade" style="height: 46px; display: none" onclick="buyEnergyUpgrade(6)">Increase erz
+        gain<br>Currently x<a id="energyUpgrade6Effect">1.00</a><br>Costs <a id="energyUpgrade6Cost">20,000,000</a>
+        Energy</button>
+      <!--<button class="energyBuyMaxButton" onclick="energyBuyMax(6)">Buy max</button><br>
+      <button id="energyAutoMaxAllButton" onclick="energyAutoMaxAll()">Auto max all: On</button>
+      <button id="energyMaxAllButton" onclick="energyMaxAll()">Max all</button>-->
+    </div>
   </div>
 
   <!--<button class="tabButton" id ="achievementTabButton" style="position: absolute; top: 5px; left: 164px; min-height: 20px; margin: 0; z-index: 1"
   onclick="changeTab(3)">Achievements</button>-->
   <!--<button class="tabButton" style="position: absolute; top: 30px; left: 5px; min-height: 20px; margin: 0; z-index: 1"
   onclick="changeTab(4)">Info/credits</button>-->
-
 
   <!--Scripts-->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

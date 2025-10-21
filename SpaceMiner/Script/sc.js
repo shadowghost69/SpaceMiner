@@ -16,7 +16,7 @@ function buyMiner() {
 
 function buyMaxMiner() {
     if (!game.sc.gte(game.minerCost)) {
-        console.log("Not enough Space-Crystals to buy miners.");
+        console.log("Not enough Space Crystals to buy miners.");
         return;
     }
 
