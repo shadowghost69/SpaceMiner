@@ -253,9 +253,14 @@ let isDragging = false;
 let lastMousePos = { x: 0, y: 0 };
 let backgroundPos = { x: 0, y: 0 };
 
+let draggingIgnoredLogged = false; // Flag to track if the message has been logged
+
 document.addEventListener('mousedown', (e) => {
     if (e.target.closest('.tab')) {
-        console.log("Dragging ignored for tabs.");
+        if (!draggingIgnoredLogged) {
+            console.log("Dragging ignored for tabs.");
+            draggingIgnoredLogged = true; // Set the flag to true after logging
+        }
         return; // Do not start dragging if clicking inside a tab
     }
 
@@ -263,6 +268,12 @@ document.addEventListener('mousedown', (e) => {
     lastMousePos.x = e.clientX;
     lastMousePos.y = e.clientY;
     document.body.style.cursor = 'grabbing'; // Change cursor to grabbing
+});
+
+document.addEventListener('mouseup', () => {
+    isDragging = false;
+    document.body.style.cursor = 'all-scroll'; // Reset cursor to all-scroll
+    // Remove the flag reset if you don't want the log to appear again
 });
 
 // Mouse move event to drag the background
@@ -283,8 +294,6 @@ document.addEventListener('mousemove', (e) => {
     }
 });
 
-// Mouse up event to stop dragging
-document.addEventListener('mouseup', () => {
-    isDragging = false;
-    document.body.style.cursor = 'all-scroll'; // Reset cursor to all-scroll
+document.querySelectorAll(".planetButton").forEach(button => {
+  button.addEventListener("mousedown", e => e.preventDefault());
 });

@@ -1,28 +1,22 @@
 function unlockGenerator() {
-    const generatorTab = document.getElementById('generator');
-    const unlockButton = document.getElementById('unlockGeneratorButton');
+    if (game.sc.gte(25)) { // Check if the player has enough Space-Crystals
+        game.sc = game.sc.sub(25); // Deduct the cost
+        game.generatorUnlocked = true; // Unlock the generator
+        document.getElementById('generator').style.display = 'block'; // Show the Generator Tab
+        const repairGeneratorButton = document.getElementById('repairGeneratorButton');
+        if (repairGeneratorButton) {
+            repairGeneratorButton.style.display = 'none'; // Hide the "Unlock Generator" button
+        }
 
-    if (!generatorTab || !unlockButton) {
-        console.error("Generator elements not found.");
-        return;
+        // Show the "Unlock Energy Upgrades" button
+        const buyEnergyUpgradesButton = document.getElementById('buyEnergyUpgradesButton');
+        if (buyEnergyUpgradesButton) {
+            buyEnergyUpgradesButton.style.display = 'block';
+        }
+
+        console.log("%cGenerator repaired Successfully!", 'color: Turquoise; font-weight: bold;');
+        updateSmall(); // Refresh the UI
+    } else {
+        alert("You need at least 250 Space-Crystals to unlock the generator!");
     }
-
-    // Check if the player has enough Space Crystals (SC)
-    if (game.sc.lt(250)) {
-        alert("You need at least 250 Space Crystals to repair the generator!");
-        return;
-    }
-
-    // Deduct 250 SC and unlock the generator
-    game.sc = game.sc.sub(250).max(0); // Deduct 250 SC
-    generatorTab.style.display = 'block'; // Show the Generator Tab
-    unlockButton.style.display = 'none'; // Hide the "Repair Generator" button
-    console.log("Generator unlocked!");
-    addUnlock(); // Sets unlock to 1
-
-    // Save the unlocked state in localStorage
-    localStorage.setItem('generatorUnlocked', 'true');
-
-    // Update the UI
-    updateSmall();
 }

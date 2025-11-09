@@ -21,8 +21,10 @@ const game = {
         { id: 5, bought: new Decimal(0), cost: new Decimal(500)}, // Upgrade 5
         { id: 6, bought: new Decimal(0), cost: new Decimal(2e7)}, // Upgrade 6
     ],
+
     energy: new Decimal(0),
     energyPerSecond: new Decimal(1),
+    energySCmultiplier: new Decimal(1),
 
     generatorUnlocked: false,
     generatorStage: 1,
@@ -43,48 +45,31 @@ const BMCost = Decimal.sumGeometricSeries(
 );
 
 function updateSmall() {
+    // Update Space-Crystals (SC) display
     const scElement = document.getElementById("sc");
     if (scElement) {
         scElement.textContent = format(game.sc); // Display Space-Crystals in scientific notation
     }
 
+    // Update SC per second display
     const scPerSecondElement = document.getElementById("scPerSecond");
     if (scPerSecondElement) {
         scPerSecondElement.textContent = format(game.scPerSecond); // Display SC per second in scientific notation
     }
 
+    // Update SC per click display
     const scPerClickElement = document.getElementById("scPerClick");
     if (scPerClickElement) {
         scPerClickElement.textContent = format(game.scPerClick); // Display SC per click in scientific notation
     }
 
+    // Update miner cost display
     const minerElement = document.getElementById("minerCost");
     if (minerElement) {
         minerElement.textContent = format(game.minerCost); // Display miner cost in scientific notation
     }
 
-    // Check and restore the visibility of the Generator Tab
-    const generatorTab = document.getElementById('generator');
-    const unlockButton = document.getElementById('unlockGeneratorButton');
-
-    if (localStorage.getItem('generatorUnlocked') === 'true') {
-        if (generatorTab) generatorTab.style.display = 'block'; // Show the Generator Tab
-        if (unlockButton) unlockButton.style.display = 'none'; // Hide the "Repair Generator" button
-    }
-
-    // Check and restore the visibility of the Energy Tab
-    const energyTab = document.getElementById('energyTab');
-    const energyUpgradeButton = document.getElementById('buyEnergyUpgradesButton');
-    if (localStorage.getItem('energyTabUnlocked') === 'true') {
-        if (energyTab) energyTab.style.display = 'block'; // Show the Energy Tab
-    }
-
-    // Check and restore the visibility of the "Buy Energy Upgrades" button
-    if (localStorage.getItem('buyEnergyUpgradesHidden') === 'true') {
-        if (energyUpgradeButton) energyUpgradeButton.style.display = 'none'; // Hide the button
-    }
-
-    // Update energy and energyPerSecond in the UI
+    // Update energy and energy per second display
     const energyElement = document.getElementById("energy");
     const energyPerSecondElement = document.getElementById("energyPerSecond");
     if (energyElement) {
@@ -93,10 +78,56 @@ function updateSmall() {
     if (energyPerSecondElement) {
         energyPerSecondElement.textContent = format(game.energyPerSecond); // Display energy per second in scientific notation
     }
-    
+
+    // Update energy upgrade costs
     updateEnergyUpgradeCosts();
 
+    // Update miner button state
     updateMinerButton();
+
+    // Call calculateEnergySCMultiplier
+    if (typeof calculateEnergySCMultiplier === "function") {
+        calculateEnergySCMultiplier();
+    } else {
+        console.error("calculateEnergySCMultiplier is not defined");
+    }
+
+    // Unlock the Generator Tab if the generator is unlocked
+    addUnlock('generator', game.generatorUnlocked);
+
+    // Unlock the Spaceship Tab only if the spaceship is repaired
+    addUnlock('spaceshipTab', game.spaceshipRepaired);
+
+    // Unlock the Space Tab only if space is unlocked
+    addUnlock('spaceTab', game.spaceUnlocked);
+
+    // Unlock the Energy Tab only if explicitly unlocked
+    const energyTabUnlocked = localStorage.getItem('energyTabUnlocked') === 'true';
+    addUnlock('energyTab', energyTabUnlocked);
+
+    // Update the visibility of the unlock energy upgrades button
+    const buyEnergyUpgradesButton = document.getElementById("buyEnergyUpgradesButton");
+    if (buyEnergyUpgradesButton) {
+        buyEnergyUpgradesButton.style.display = game.energyUpgradesUnlocked ? "none" : "block";
+    }
+
+    // Update the visibility of the repair ship button
+    const repairShipButton = document.getElementById("repairShipButton");
+    if (repairShipButton) {
+        repairShipButton.style.display = game.spaceshipRepaired ? "none" : "block";
+    }
+
+    // Update the visibility of the unlock space button
+    const unlockSpaceButton = document.getElementById("unlockSpaceButton");
+    if (unlockSpaceButton) {
+        unlockSpaceButton.style.display = game.spaceUnlocked ? "none" : "block";
+    }
+
+    // Update the visibility of the repair generator button
+    const repairGeneratorButton = document.getElementById("repairGeneratorButton");
+    if (repairGeneratorButton) {
+        repairGeneratorButton.style.display = game.generatorUnlocked ? "none" : "block";
+    }
 }
 
 function updateMinerButton() {
@@ -106,20 +137,58 @@ function updateMinerButton() {
     }
 }
 
-function updatePerSecond() { // Function to update Space-Crystals per second
+function updatePerSecond() {
+    console.log("Before updatePerSecond:", game.energy, "Type:", typeof game.energy);
+
     game.scPerSecond = game.miner; // Calculate SC/s from miners
-    game.sc = game.sc.add(game.scPerSecond.div(10));
+    game.sc = game.sc.add(game.scPerSecond.div(10)); // Increment Space-Crystals
     game.energy = game.energy.add(game.energyPerSecond.div(10));
-    updateSmall();
+
+    // Only increment energy if the Generator Tab is unlocked
+    const generatorUnlocked = localStorage.getItem('generatorUnlocked') === 'true';
+    if (generatorUnlocked) {
+        game.energy = game.energy.add(game.energyPerSecond.div(10)); // Increment energy
+    }
+
+    console.log("After updatePerSecond:", game.energy, "Type:", typeof game.energy);
+
+    updateSmall(); // Update the UI
 }
 
 function updateEnergyUpgradeCosts() {
-  game.energyUpgrades.forEach(upgrade => {
-      const costElement = document.getElementById(`energyUpgrade${upgrade.id}Cost`);
-      if (costElement) {
-          costElement.textContent = format(upgrade.cost); // Display cost as a whole number
-      }
-  });
+    game.energyUpgrades.forEach(upgrade => {
+        const costElement = document.getElementById(`energyUpgrade${upgrade.id}Cost`);
+        if (costElement) {
+            costElement.textContent = format(upgrade.cost); // Display cost as a whole number
+        }
+    });
+}
+
+function calculateEnergySCMultiplier() {
+    console.log("Before calculation:", game.energy, "Type:", typeof game.energy);
+
+    // Ensure game.energy is a Decimal
+    if (!(game.energy instanceof Decimal)) {
+        console.error("game.energy is not a Decimal. Converting it now.");
+        game.energy = new Decimal(game.energy || 0);
+    }
+
+    // Calculate the Energy-Space Crystal Multiplier
+    game.energySCMultiplier = game.energy
+        .div(10)
+        .add(1)
+        .log10()
+        .mul(2)
+        .add(1)
+        .mul(new Decimal(1.25).pow(game.energyUpgrades[2].bought.pow(0.8)));
+
+    console.log("After calculation:", game.energySCMultiplier, "Type:", typeof game.energySCMultiplier);
+
+    // Update the multiplier display
+    const multiplierElement = document.getElementById("energySCMultiplier");
+    if (multiplierElement) {
+        multiplierElement.textContent = format(game.energySCMultiplier, 2);
+    }
 }
 
 setInterval(updatePerSecond, 100); // Call this function every 100ms
@@ -143,38 +212,20 @@ function format(value) {
 
 updateSmall(); // Call updateSmall immediately after initializing the game
 
-function save() {
-  game.lastSave = Date.now();
+game.energyPerSecond = game.energyPerSecond.add(1).max(0); // Add energy per second and ensure energy does not go below 0
 
-  const gameToSave = {
-    ...game,
-    sc: game.sc.toString(),
-    scPerSecond: game.scPerSecond.toString(),
-    scPerClick: game.scPerClick.toString(),
-    miner: game.miner.toString(),
-    minerCost: game.minerCost.toString(),
+function setAutoSave() {
+    const autosaveInterval = 500; // Autosave every 0.5 seconds
+    setInterval(save, autosaveInterval);
 
-    energy: game.energy.toString(),
-    energyPerSecond: game.energyPerSecond.toString(),
-    energyUpgrades: game.energyUpgrades.map(upgrade => ({
-        id: upgrade.id,
-        bought: upgrade.bought.toString(),
-        cost: upgrade.cost.toString(),
-    })),
-  };
-
-  try {
-    localStorage.setItem("SpaceSave", JSON.stringify(gameToSave));
-    localStorage.setItem("SpaceLastSaved", game.lastSave);
-    console.log("Game saved successfully!");
-  } catch (error) {
-    console.error("Failed to save game:", error);
-  }
-}
-
-function setAutoSave() { // Function to enable autosave
-  const autosaveInterval = 500; // Autosave every 0.5 seconds
-  setInterval(save, autosaveInterval);
+    // Log "Game saved successfully!" every 60 seconds
+    const logSaveInterval = 60000; // 60 seconds
+    setInterval(() => {
+        console.log(
+            `%cGame saved successfully at ${new Date(game.lastSave).toLocaleTimeString()}`,
+            'color: green; font-weight: bold;'
+        );
+    }, logSaveInterval);
 }
 
 setAutoSave(); // Call setAutoSave during game initialization
@@ -200,56 +251,191 @@ function changeTab(tabIndex) {
 
 window.changeTab = changeTab;
 
-function load() {
-  const savedGame = localStorage.getItem("SpaceSave");
-  if (savedGame) {
+function save() {
+    game.lastSave = Date.now();
+
+    const gameToSave = {
+        ...game,
+        sc: game.sc.toString(), // Save Space-Crystals
+        scPerSecond: game.scPerSecond.toString(), // Save SC per second
+        scPerClick: game.scPerClick.toString(), // Save SC per click
+        miner: game.miner.toString(), // Save miner count
+        minerCost: game.minerCost.toString(), // Save miner cost
+        energy: game.energy.toString(), // Save energy
+        energyPerSecond: game.energyPerSecond.toString(), // Save energy per second
+        energyUpgrades: game.energyUpgrades.map(upgrade => ({
+            id: upgrade.id,
+            bought: upgrade.bought.toString(),
+            cost: upgrade.cost.toString(),
+        })), // Save energy upgrades
+        generatorUnlocked: game.generatorUnlocked, // Save generator unlock status
+        spaceshipRepaired: game.spaceshipRepaired, // Save spaceship repair status
+        spaceUnlocked: game.spaceUnlocked, // Save Space Tab unlock status
+        energyUpgradesUnlocked: game.energyUpgradesUnlocked || false, // Save energy upgrades unlock status
+    };
+
     try {
-      const parsedGame = JSON.parse(savedGame);
+        // Save the game state to localStorage
+        localStorage.setItem("SpaceSave", JSON.stringify(gameToSave));
+        localStorage.setItem("SpaceLastSaved", game.lastSave);
 
-      game.sc = new Decimal(parsedGame.sc);
-      game.scPerSecond = new Decimal(parsedGame.scPerSecond);
-      game.scPerClick = new Decimal(parsedGame.scPerClick);
-      game.miner = new Decimal(parsedGame.miner);
-      game.minerCost = new Decimal(parsedGame.minerCost);
+        // Save the visibility of specific buttons
+        const buttons = [
+            { id: 'buyEnergyUpgradesButton', key: 'buyEnergyUpgradesButtonVisible' },
+            { id: 'repairGeneratorButton', key: 'repairGeneratorButtonVisible' },
+            { id: 'repairShipButton', key: 'repairShipButtonVisible' },
+            { id: 'unlockSpaceButton', key: 'unlockSpaceButtonVisible' },
+        ];
 
-      game.energy = new Decimal(parsedGame.energy);
-      game.energyPerSecond = new Decimal(parsedGame.energyPerSecond);
+        buttons.forEach(button => {
+            const element = document.getElementById(button.id);
+            if (element) {
+                localStorage.setItem(button.key, element.style.display !== 'none');
+            }
+        });
 
-      game.energyUpgrades = parsedGame.energyUpgrades
-          ? parsedGame.energyUpgrades.map(upgrade => ({
-              id: upgrade.id,
-              bought: new Decimal(upgrade.bought),
-              cost: new Decimal(upgrade.cost),
-          }))
-          : [
-              { id: 1, bought: new Decimal(0), cost: new Decimal(50) },
-              { id: 2, bought: new Decimal(0), cost: new Decimal(100) },
-              { id: 3, bought: new Decimal(0), cost: new Decimal(100) },
-              { id: 4, bought: new Decimal(0), cost: new Decimal(500) },
-              { id: 5, bought: new Decimal(0), cost: new Decimal(500) },
-              { id: 6, bought: new Decimal(0), cost: new Decimal(2e7) },
-          ];
-
-      console.log("Game loaded successfully!");
     } catch (error) {
-      console.error("Failed to load game:", error);
+        console.error("%cFailed to save game:", "color: red; font-weight: bold;", error);
     }
-  } else {
-    console.log("No saved game found.");
-  }
 }
 
-load(); // Call load during game initialization
+window.save = save; // Call save during game initialization
+
+function load() {
+    const savedGame = localStorage.getItem("SpaceSave");
+    if (savedGame) {
+        try {
+            const parsedGame = JSON.parse(savedGame);
+
+            // Restore game variables
+            game.sc = new Decimal(parsedGame.sc);
+            game.scPerSecond = new Decimal(parsedGame.scPerSecond);
+            game.scPerClick = new Decimal(parsedGame.scPerClick);
+            game.miner = new Decimal(parsedGame.miner);
+            game.minerCost = new Decimal(parsedGame.minerCost);
+            game.energy = new Decimal(parsedGame.energy || 0);
+            game.energyPerSecond = new Decimal(parsedGame.energyPerSecond);
+
+            // Restore energy upgrades
+            game.energyUpgrades = parsedGame.energyUpgrades
+                ? parsedGame.energyUpgrades.map(upgrade => ({
+                    id: upgrade.id,
+                    bought: new Decimal(upgrade.bought),
+                    cost: new Decimal(upgrade.cost),
+                }))
+                : [
+                    { id: 1, bought: new Decimal(0), cost: new Decimal(50) },
+                    { id: 2, bought: new Decimal(0), cost: new Decimal(100) },
+                    { id: 3, bought: new Decimal(0), cost: new Decimal(100) },
+                    { id: 4, bought: new Decimal(0), cost: new Decimal(500) },
+                    { id: 5, bought: new Decimal(0), cost: new Decimal(500) },
+                    { id: 6, bought: new Decimal(0), cost: new Decimal(2e7) },
+                ];
+
+            // Restore unlock states
+            game.generatorUnlocked = parsedGame.generatorUnlocked || false;
+            game.spaceshipRepaired = parsedGame.spaceshipRepaired || false;
+            game.spaceUnlocked = parsedGame.spaceUnlocked || false;
+            game.energyUpgradesUnlocked = parsedGame.energyUpgradesUnlocked || false;
+
+            // Restore button visibility
+            const buttons = [
+                { id: 'repairGeneratorButton', key: 'repairGeneratorButtonVisible', condition: game.generatorUnlocked },
+                { id: 'repairShipButton', key: 'repairShipButtonVisible', condition: game.spaceshipRepaired },
+                { id: 'unlockSpaceButton', key: 'unlockSpaceButtonVisible', condition: game.spaceUnlocked },
+                { id: 'buyEnergyUpgradesButton', key: 'buyEnergyUpgradesButtonVisible', condition: !game.energyUpgradesUnlocked },
+            ];
+
+            buttons.forEach(button => {
+                const element = document.getElementById(button.id);
+                const isVisible = localStorage.getItem(button.key) === 'true';
+                if (element) {
+                    element.style.display = button.condition ? 'none' : (isVisible ? 'block' : 'none');
+                }
+            });
+
+            // Restore Energy Tab visibility
+            const energyTabUnlocked = localStorage.getItem('energyTabUnlocked') === 'true';
+            addUnlock('energyTab', energyTabUnlocked);
+
+            // Restore Generator Tab visibility
+            addUnlock('generator', game.generatorUnlocked);
+
+            // Restore Spaceship Tab visibility
+            addUnlock('spaceshipTab', game.spaceshipRepaired);
+
+            // Restore Space Tab visibility
+            addUnlock('spaceTab', game.spaceUnlocked);
+
+            console.log("%cGame loaded successfully!", "color: green; font-weight: bold;");
+        } catch (error) {
+            console.error("%cFailed to load game:", "color: red; font-weight: bold;", error);
+        }
+    } else {
+        console.log("%cNo saved game found.", "color: red; font-weight: bold;");
+    }
+}
 
 function reset() {
-    game.sc = new Decimal(0);
-    game.scPerSecond = new Decimal(0);
-    game.scPerClick = new Decimal(1);
-    game.miner = new Decimal(0);
-    game.minerCost = new Decimal(20);
+    // Reset game variables
+    game.unlocks = 0;
+    game.lastUpdate = Date.now();
+    game.lastSave = 0;
+    game.timePlayed = 0;
+    game.currentTab = 0;
 
+    game.sc = new Decimal(0); // Reset Space-Crystals
+    game.scPerSecond = new Decimal(0); // Reset SC per second
+    game.scPerClick = new Decimal(1); // Reset SC per click
+    game.miner = new Decimal(0); // Reset miners
+    game.minerCost = new Decimal(20); // Reset miner cost
+
+    game.generatorUnlocked = false; // Reset generator unlock status
+    game.generatorStage = 1; // Reset generator stage
+
+    game.energy = new Decimal(0); // Reset energy
+    game.energyPerSecond = new Decimal(1); // Reset energy per second
+
+    game.spaceshipRepaired = false; // Reset spaceship repair status
+    game.spaceUnlocked = false; // Reset Space Tab unlock status
+    game.energyUpgradesUnlocked = false; // Reset energy upgrades unlock status
+
+    game.energyUpgrades = [ // Reset energy upgrades
+        { id: 1, bought: new Decimal(0), cost: new Decimal(50) },
+        { id: 2, bought: new Decimal(0), cost: new Decimal(100) },
+        { id: 3, bought: new Decimal(0), cost: new Decimal(100) },
+        { id: 4, bought: new Decimal(0), cost: new Decimal(500) },
+        { id: 5, bought: new Decimal(0), cost: new Decimal(500) },
+        { id: 6, bought: new Decimal(0), cost: new Decimal(2e7) },
+    ];
+
+    // Clear saved data from localStorage
     localStorage.removeItem("SpaceSave");
-    console.log("Saved data cleared.");
+    localStorage.removeItem("energyTabUnlocked");
+    localStorage.removeItem("repairGeneratorButtonVisible");
+    localStorage.removeItem("repairShipButtonVisible");
+    localStorage.removeItem("spaceUnlocked");
+    localStorage.removeItem("buyEnergyUpgradesButtonVisible");
+
+    // Reset UI elements
+    const tabs = ['generator', 'energyTab', 'spaceshipTab', 'spaceTab'];
+    tabs.forEach(tabId => {
+        const tab = document.getElementById(tabId);
+        if (tab) tab.style.display = 'none'; // Hide all tabs
+    });
+
+    const buttons = [
+        'repairShipButton',
+        'repairGeneratorButton',
+        'unlockSpaceButton',
+        'buyEnergyUpgradesButton',
+    ];
+    buttons.forEach(buttonId => {
+        const button = document.getElementById(buttonId);
+        if (button) button.style.display = 'block'; // Show all relevant buttons
+    });
+
+    console.log("%cAll progress has been reset.", "color: red; font-weight: bold;");
 
     updateSmall(); // Refresh the display after resetting
 }
@@ -263,11 +449,24 @@ function hardReset() { //If the user confirms the hard reset, resets all variabl
 }
 
 function addUnlock(id, condition) {
-    console.log(`addUnlock called with ID: ${id}, Condition: ${condition}`);
     const element = document.getElementById(id);
     if (element) {
-        element.style.display = condition ? 'block' : 'none';
+        const currentDisplay = element.style.display;
+        const newDisplay = condition ? 'block' : 'none';
+
+        // Only log if the display state changes
+        if (currentDisplay !== newDisplay) {
+            console.log(`%cUnlocking ${id}: ${condition ? 'Visible' : 'Hidden'}`, "color: turquoise; font-weight: bold;");
+        }
+
+        element.style.display = newDisplay;
     } else {
-        console.error(`Element with ID '${id}' not found.`);
+        console.error("%cElement with ID '${id}' not found.", "color: red; font-weight: bold;");
     }
 }
+
+
+if (addUnlock >= 2) {
+    document.getElementsByClassName("upgradeGeneratorButton")[0].style.display = "block"; // Show the generator upgrade button
+}
+//Das muss gefixxt werden lol

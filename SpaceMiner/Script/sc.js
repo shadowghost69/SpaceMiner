@@ -10,13 +10,13 @@ function buyMiner() {
         game.minerCost = game.minerCost.mul(1.1); // Increase miner cost
         updateSmall(); // Refresh the display
     } else {
-        alert("Not enough Space Crystals to buy a miner!");
+        alert("%cNot enough Space Crystals to buy a miner!", "color: Orange; font-weight: bold;");
     }
 }
 
 function buyMaxMiner() {
     if (!game.sc.gte(game.minerCost)) {
-        console.log("Not enough Space Crystals to buy miners.");
+        console.log("%cNot enough Space Crystals to buy miners.", "color: Orange; font-weight: bold;");
         return;
     }
 
@@ -26,10 +26,9 @@ function buyMaxMiner() {
         new Decimal(1.1),
         game.miner
     );
-    console.log("Max miners that can be bought:", BMamountCanBuy);
 
     if (BMamountCanBuy.eq(0)) {
-        console.log("Cannot buy any miners.");
+        console.log("%cCannot buy any miners.", "color: Orange; font-weight: bold;");
         return;
     }
 
@@ -39,15 +38,11 @@ function buyMaxMiner() {
         new Decimal(1.1),
         game.miner
     );
-    console.log("Total cost for max miners:", BMCost);
 
     game.sc = game.sc.sub(BMCost).max(0); // Subtract the total cost from Space-Crystals
 
     game.miner = game.miner.add(BMamountCanBuy); // Add the miners and update the miner cost
     game.minerCost = new Decimal(20).mul(Decimal.pow(1.1, game.miner));
-
-    console.log("New miner count:", game.miner);
-    console.log("New miner cost:", game.minerCost);
 
     // Refresh the display
     updateSmall();

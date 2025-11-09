@@ -12,11 +12,11 @@
 
 <body onclick="updateSmall()">
     <!-- Navigation Buttons -->
-    <button id="tabButton" style="position: absolute; top: 5px; left: 5px; min-width: 80px; min-height: 25px; margin: 0; z-index: 1;" onclick="changeTab(2)">Resources</button>
-    <button id="tabButton" style="position: absolute; top: 5px; left: 90px; min-width: 80px; min-height: 25px; margin: 0; z-index: 1;" onclick="changeTab(1)">Settings</button>
+    <button id="resourcesTabButton" style="position: absolute; top: 5px; left: 5px; min-width: 80px; min-height: 25px; margin: 0; z-index: 1;" onclick="changeTab(2)">Resources</button>
+    <button id="settingsTabButton" style="position: absolute; top: 5px; left: 90px; min-width: 80px; min-height: 25px; margin: 0; z-index: 1;" onclick="changeTab(1)">Settings</button>
 
     <!--Main Content-->
-    <div class="window box tab" id="mainTab" style="width: 350px; height: 300px; left: 930px; top: 470px;">
+    <div class="window box tab" id="mainTab">
         <div class="title-bar">
             <div class="title-bar-text">Space-Miner</div>
         </div>
@@ -28,8 +28,10 @@
             <button id="buyMaxMinerButton" style="height: 34px; min-width: 49px" onclick="buyMaxMiner()">Buy<br>max</button><br>
             <button id="minerAutoBuyMaxButton" style="display: none;" onclick="minerAutoBuyMax()">Auto buy max: On</button><br><br>
 
-            <button id="unlockGeneratorButton" style="height: 34px" onclick="unlockGenerator()">Repair Generator<br>Costs 250 Crystals</button><br><br>
-            <button id="repairShip" style="height: 34px" onclick="repairShip()">Repair Spaceship<br>Costs 2,000 Crystals</button>
+            <button id="repairGeneratorButton" style="height: 34px" onclick="unlockGenerator()">Repair Generator<br>Costs 25 Crystals</button><br><br>
+            <button id="repairShipButton" style="height: 34px" onclick="repairShip()">Repair Spaceship<br>Costs 20 Crystals</button>
+
+            <button id="unlockEmeraldButton" style="height: 34px; display: none;" onclick="unlockEmerald()">Unlock Emeralds<br>Costs 100 Crystals</button>
 
         </div>
     </div>
@@ -51,7 +53,7 @@
     </div>
   </div>
 
-  <!--Resources tab-->
+  <!--Resources Tab-->
   <div id="resourcesTab" class="window box tab" style="width: 200px; top: 55px; left: 5px; transform: none; padding-bottom: 8px; z-index: 1">
     <div class="title-bar">
       <div class="title-bar-text">Resources</div>
@@ -65,7 +67,7 @@
     </div>
   </div>
 
-  <!--Generator tab-->
+  <!--Generator Tab-->
   <div class="window box" id="generator" style="width: 350px; z-index: 100;">
     <div class="title-bar">
       <div class="title-bar-text">Generator</div>
@@ -80,10 +82,10 @@
       <p id="generatorInfo" style="margin-right: 4px">Your normal generator generates Energy for you.</p>
       <p style="color: rgb(35, 17, 194)">Energy is multiplying Crystal production by <a id="EnergySCMultiplier">1.00</a></p>
       <button id="buyEnergyUpgradesButton" style="height: 34px" onclick="buyEnergyUpgrades()">Unlock energy upgrades<br>Costs
-        5,000 Crystals</button>
+        50 Crystals</button>
       
-      <button class="upgradeGeneratorButton" style="height: 46px; display: none;" onclick="upgradeGenerator(1)">Upgrade your
-        generator<br>Multiplies energy gain by 100<br>Costs 2,500,000 Crystals</button>
+      <!--<button class="upgradeGeneratorButton" style="height: 46px; display: none;" onclick="upgradeGenerator(1)">Upgrade your
+        generator<br>Multiplies energy gain by 100<br>Costs 2,500,000 Crystals</button>-->
 
       <!--<button class="upgradeGeneratorButton" style="height: 46px; display: none;" onclick="upgradeGenerator(2)">Upgrade your
         generator into an elder<br>Multiplies energy gain by 100<br>Costs 1.00e12 Crystals</button>
@@ -95,7 +97,7 @@
         dragon with the power of light<br>Multiplies energy gain by 10,000,000<br>Costs 1.00e150 Crystals</button>-->
   </div>
 
-    <!--Energy upgrades tab-->
+    <!--Energy upgrades Tab-->
   <div class="window box" id="energyTab" style="width: 350px; height: 400px; background-color: rgb(10, 165, 226); display: none">
     <div class="title-bar">
       <div class="title-bar-text">Energy upgrades</div>
@@ -130,20 +132,136 @@
     </div>
   </div>
 
+  <!--Spaceship Tab-->
+  <div class="window box" id="spaceshipTab" style="width: 350px; z-index: 100; display: none;">
+    <div class="title-bar">
+      <div class="title-bar-text">Spaceship</div>
+    </div>
+    <div class="window-body">
+      <center>
+        <p id="spaceshipTitle" class="titleText" style="margin-top: 0;"><a style="font-size: 14px">Spaceship</a></p>
+        <img id="spaceshipImg" draggable="false" src="img/iconDragon4.png" style="width: 300px; margin: 4px; pointer-events: auto"><br>
+      </center>
+      <p id="spaceshipInfo" style="margin-right: 4px">Your spaceship lets you fly through space.</p>
+      <button id="unlockSpaceButton" style="height: 34px" onclick="unlockSpace()">Unlock Space<br>Costs
+        50 Crystals</button>
+  </div>
+
+  <!--Space Tab-->
+  <div class="window box" id="spaceTab" style="display: none;">
+    <div class="title-bar">
+        <div class="title-bar-text">Space</div>
+    </div>
+    <div class="window-body">
+
+        <!-- Planet 1 -->
+        <button id="planet1Button" class="planetButton" style="top: 50%; left: 25%;" onclick="flyToPlanet(1)">
+            <img src="./img/GreenPlanet.png" alt="Planet 1" class="planetImage">
+        </button>
+
+        <!-- Planet 2 -->
+        <button id="planet2Button" class="planetButton" style="top: 50%; left: 75%;" onclick="flyToPlanet(2)">
+            <img src="./img/LockedPlanet.png" alt="Planet 2" class="planetImage">
+        </button>
+        
+    </div>
+  </div>
+
+      <!--Ruby upgrades Tab-->
+  <div class="window box" id="rubyTab" style="width: 350px; height: 400px; background-color: rgb(150, 6, 6);">
+    <div class="title-bar">
+      <div class="title-bar-text">Rubies</div>
+    </div>
+    <div class="window-body">
+      <button id="rubyConvertButton" onclick="rubyConvert()">Convert all gold into <a id="rubyToGet">0</a>
+        rubies (<a id="rubyConvertCooldown">0</a>)</button>
+      <p style="margin-top: 4px">You have <a id="ruby">0</a> rubies<br>+ Gain <a id="extraRubyPerSecond">2</a> extra rubies per second</p><br>
+      <button class="rubyUpgrade" onclick="buyRubyUpgrade(1)">Gain 20% more gold/second (<a
+          class="rubyUpgradesBought">0</a>/20)<br>Costs 200 rubies</button><br>
+      <button class="rubyUpgrade" onclick="buyRubyUpgrade(2)">Gain 20% more energy/second (<a
+          class="rubyUpgradesBought">0</a>/20)<br>Costs 500 rubies</button><br>
+      <button class="rubyUpgrade" onclick="buyRubyUpgrade(3)">Unlock a new energy upgrade (<a
+          class="rubyUpgradesBought">0</a>/1)<br>Costs 750 rubies</button><br>
+      <button class="rubyUpgrade" onclick="buyRubyUpgrade(4)">Miner cost scales 5% slower (<a
+          class="rubyUpgradesBought">0</a>/5)<br>Costs 1,500 rubies</button><br>
+      <button class="rubyUpgrade" onclick="buyRubyUpgrade(5)" style="height: 46px"> Automatically gain ruby every second without<br>resetting (<a
+          class="rubyUpgradesBought">0</a>/1)<br>Costs 2,000 rubies</button><br>
+      <button class="rubyUpgrade" onclick="buyRubyUpgrade(6)" style="height: 46px">Ruby increases
+        gold/second (<a class="rubyUpgradesBought">0</a>/4)<br>Currently x<a
+          id="rubyUpgrade6Effect">1.00</a><br>Costs 15,000 rubies</button><br>
+      <button class="rubyUpgrade" onclick="buyRubyUpgrade(7)" style="height: 46px; display: none">Increase magic
+        effect (<a class="rubyUpgradesBought">0</a>/<a id="rubyUpgrade7Max">10</a>)<br>Currently x<a
+          id="rubyUpgrade7Effect">1.00</a><br>Costs 1,000,000 rubies</button><br>
+    </div>
+  </div>
+
+    <!--Magic tab-->
+  <div class="window box" id="magicTab" style="width: 350px; height: 245px; background-color: rgb(18, 172, 172); display: block;">
+    <div class="title-bar" style="background:linear-gradient(90deg,rgb(14, 83, 104),rgb(10, 139, 172))">
+      <div class="title-bar-text">Magic</div>
+    </div>
+    <div class="window-body">
+      <center>
+        <p class="titleText">You have <a id="magic">0</a> magic<a id="magicCap"></a></p>
+        <button
+          style="height: 34px; margin-top: 5px; background-color: rgb(39, 185, 178); background-image: url('img/magicBack.png')"
+          onclick="magicCheck()">Reset all previous resources and upgrades<br>You will gain <a id="magicToGet"
+            style="color: rgb(4, 53, 99)">0</a> magic</button>
+        <p style="margin-top: 2px"><a id="nextMagic"></a>Your magic is multiplying your gold gain by <a
+            id="magicEffect">1</a><a id="magicEffectCap"></a></p>
+      </center>
+    </div>
+  </div>
+
+    <!--Magic upgrades tab-->
+  <div class="window box" id="magicUpgradesTab" style="width: 350px; height: 350px; background-color: rgb(18, 172, 172); display: block;">
+    <div class="title-bar" style="background:linear-gradient(90deg,rgb(14, 83, 104),rgb(10, 139, 172))">
+      <div class="title-bar-text">Magic upgrades</div>
+    </div>
+    <div class="window-body" style="display: grid; grid-template-columns: 1fr 1fr; justify-self: stretch;">
+      <button class="magicUpgrade" onclick="buyMagicUpgrade(1)">Gold multiplies its own gain<br>Currently x<a
+          id="magicUpgrade1Effect">1.00</a><br>Costs 2 magic</button>
+      <button class="magicUpgrade" onclick="buyMagicUpgrade(2)">Increases magic gain by 50%<br>Costs 3
+        magic</button>
+      <button class="magicUpgrade" onclick="buyMagicUpgrade(3)">Multiply gold and fire gain by 55.5. Waow.<br>Costs 8
+        magic</button>
+      <button class="magicUpgrade" onclick="buyMagicUpgrade(4)">Magic multiplies its own gain<br>Currently x<a
+          id="magicUpgrade4Effect">1.00</a><br>Costs 12 magic</button>
+      <button class="magicUpgrade" onclick="buyMagicUpgrade(5)">Gold multiplies fire gain<br>Currently x<a
+          id="magicUpgrade5Effect">1.00</a><br>Costs 30
+        magic</button>
+      <button class="magicUpgrade" onclick="buyMagicUpgrade(6)">Miners increase gold/second<br>Currently x<a
+          id="magicUpgrade6Effect">1.00</a><br>Costs 100 magic</button>
+      <button class="magicUpgrade" onclick="buyMagicUpgrade(7)">Double magic gain. Simple.<br>Costs 300 magic</button>
+      <button class="magicUpgrade" onclick="buyMagicUpgrade(8)">Unlock a new platinum upgrade (kept on magic
+        reset)<br>Costs
+        1,500 magic</button>
+      <button class="magicUpgrade" onclick="buyMagicUpgrade(9)">Fire upgrades 2 and 3 are severely boosted<br>Costs
+        4,000 magic</button>
+      <button class="magicUpgrade" onclick="buyMagicUpgrade(10)">Magic upgrades 4 and 6 are boosted<br>Costs 20,000
+        magic</button>
+      <button class="magicUpgrade" onclick="buyMagicUpgrade(11)">Platinum upgrade 7 can be bought an extra 10 times<br>Costs 100,000
+        magic</button>
+        <button class="magicUpgrade" style="background-color: rgb(4, 53, 99)" onclick="buyMagicUpgrade(12)">Unlock <b>???</b><br>Costs 400,000 magic</button>
+    </div>
+  </div>
+
   <!--<button class="tabButton" id ="achievementTabButton" style="position: absolute; top: 5px; left: 164px; min-height: 20px; margin: 0; z-index: 1"
   onclick="changeTab(3)">Achievements</button>-->
   <!--<button class="tabButton" style="position: absolute; top: 30px; left: 5px; min-height: 20px; margin: 0; z-index: 1"
   onclick="changeTab(4)">Info/credits</button>-->
 
   <!--Scripts-->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="./Script/break_infinity.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!--imported-->
+  <script src="./Script/break_infinity.min.js"></script> <!--imported-->
   <script src="./Script/script.js"></script>
   <script src="./Script/const.js"></script>
   <script src="./Script/sc.js"></script>
   <script src="./Script/generator.js"></script>
   <script src="./Script/energy.js"></script>
-  <script src="./Script/render.js"></script>
+  <script src="./Script/spaceship.js"></script>
+  <script src="./Script/ruby.js"></script>
+  <script src="./Script/render.js"></script> <!--more or less imported-->
   <script>load()</script>
 
 </body>
